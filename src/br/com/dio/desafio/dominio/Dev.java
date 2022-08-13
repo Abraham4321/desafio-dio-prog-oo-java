@@ -1,19 +1,18 @@
 package br.com.dio.desafio.dominio;
 
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class Dev {
-
     private String nome;
-    private Set<Conteudo> conteudosInscritos = new LinkedHashSet<>();
-    private Set<Conteudo> conteudosConcluidos = new LinkedHashSet<>();
+    private final Set<Conteudo> conteudosInscritos = new LinkedHashSet<>();
+    private final Set<Conteudo> conteudosConcluidos = new LinkedHashSet<>();
+
+    private static final String DEV_NAO_ESTA_MATRICULADO = "não está matriculado em nenhum conteúdo.";
+    private static final String DEV_NAO_CONCLUIU_CONTEUDO = "não concluiu nenhum conteúdo ainda.";
 
     public void inscreverBootcamp(Bootcamp bootcamp){
         this.conteudosInscritos.addAll(bootcamp.getConteudos());
-        bootcamp.getDevsInscritos().add(this);
+        bootcamp.addDevInscrito(this);
     }
 
     public void progredir() {
@@ -23,7 +22,7 @@ public class Dev {
             this.conteudosConcluidos.add(conteudo.get());
             this.conteudosInscritos.remove(conteudo.get());
         } else {
-            System.err.println("Você não está matriculado em nenhum conteúdo!");
+            System.err.println(this.getNome() + " " + DEV_NAO_ESTA_MATRICULADO);
         }
     }
 
@@ -43,19 +42,35 @@ public class Dev {
     }
 
     public Set<Conteudo> getConteudosInscritos() {
-        return conteudosInscritos;
+        return Collections.unmodifiableSet(conteudosInscritos);
     }
 
-    public void setConteudosInscritos(Set<Conteudo> conteudosInscritos) {
-        this.conteudosInscritos = conteudosInscritos;
+    public String getConteudosInscritosFormatado() {
+        String s = null;
+        if (getConteudosInscritos().isEmpty()) {
+            s = this.getNome() + " " + DEV_NAO_ESTA_MATRICULADO;
+        } else {
+            for (Conteudo c:getConteudosInscritos()) {
+                s = "\n" + c.toString();
+            }
+        }
+        return s;
     }
 
     public Set<Conteudo> getConteudosConcluidos() {
-        return conteudosConcluidos;
+        return Collections.unmodifiableSet(conteudosConcluidos);
     }
 
-    public void setConteudosConcluidos(Set<Conteudo> conteudosConcluidos) {
-        this.conteudosConcluidos = conteudosConcluidos;
+    public String getConteudosConcluidosFormatado() {
+        String s = null;
+        if (getConteudosConcluidos().isEmpty()) {
+            s = this.getNome() + " " + DEV_NAO_CONCLUIU_CONTEUDO;
+        } else {
+            for (Conteudo c:getConteudosConcluidos()) {
+                s = "\n" + c.toString();
+            }
+        }
+        return s;
     }
 
     @Override
